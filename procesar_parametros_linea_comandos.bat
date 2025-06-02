@@ -27,7 +27,6 @@ REM Comprobar si quedan parametros para procesar
 IF "%~1"=="" GOTO EndParseParams
 
 IF /I "%~1"=="/f" (
-
     IF NOT "%~2"=="" (
         IF NOT "%~2:~0,1%"=="/" (
             SET "Archivo=%~2"
@@ -53,7 +52,7 @@ IF /I "%~1"=="/f" (
         GOTO ParseParamsLoop
     )
 )
-echo aquí
+
 REM La opción puede ser de mas de una letra
 IF /I "%~1"=="/opcional" (
     IF NOT "%~2"=="" (
