@@ -4,12 +4,16 @@ SET NLS_LANG=AMERICAN_AMERICA.UTF8
 setlocal ENABLEEXTENSIONS
 setlocal ENABLEDELAYEDEXPANSION 
 echo.
+
 rem sin parámetros mostar la ayuda NO. hace una copia y punto.
+rem emitir un pequeño mensaje y hablar del parámetro de ayuda
+rem añadir /h y /? como parámetros para mostar la ayuda.
+REM parámetro para funcionar en modo silencioso.
 rem si no existe el fichero copiaSeguridad.bat y no se proporciona como parámetro  mostar error / ayuda
 rem opción que muestre la configuración
 rem comprobar si un dato dado es fichero o directorio
 
-
+set VERSION=0.1
 set ahora=%date:~6,4%%date:~3,2%%date:~0,2%%time:~0,2%%time:~3,2%%time:~6,2%
 set ahora=%ahora: =0%
 rem aquí se hace la compresión
@@ -35,6 +39,10 @@ IF /I "%~1"=="/config" (
     SHIFT 
     GOTO :bucleParametros
 )
+IF /I "%~1"=="/H"  GOTO :AYUDA
+IF /I "%~1"=="/?"  GOTO :AYUDA
+
+
 goto :bucleParametros
 
 
@@ -64,6 +72,7 @@ for /F "tokens=* EOL=#" %%X in (copiaSeguridad.dat) do (
 	set elto=%%X
     echo [=] Elto: !elto!
 rem     "%COMPRESOR%" a -r -bso0 -bsp0 "%RUTACOPIA%%FICHCOPIA%" !elto!
+
 REM 	if exist !elto! (
 rem 	set ATRIB=%%~aX
 rem		ECHO atrib !ATRIB!
@@ -83,10 +92,12 @@ REM )
 goto :salir
 
 :ayuda
-    echo [ ] copiaSeguridad. Modo de Uso.
-    echo [ ] lee una lista de ficheros y/o carpetas los comprime y copia.
-    echo     CopiaSeguridad  [/config]
+    echo  CopiaSeguridad. v%VERSION%. 
+    echo  lee una lista de ficheros y/o carpetas los comprime y copia.
+    echo  Modo de Uso:
+    echo     CopiaSeguridad  [/config] [/h ^| /^?]
     echo             /config        muestra la configuración de la aplicación.
+    echo             /h ^| /^?        muestra la ayuda y termina.
     goto :fin
     
 :salir
