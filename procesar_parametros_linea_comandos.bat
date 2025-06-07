@@ -28,7 +28,7 @@ IF "%~1"=="" GOTO EndParseParams
 
 IF /I "%~1"=="/f" (
     IF NOT "%~2"=="" (
-        IF NOT "%2:~0,1%"=="/" (
+        IF NOT "%~2:~0,1%"=="/" (
             SET "Archivo=%~2"
             SHIFT
             SHIFT

@@ -1,0 +1,11 @@
+# Cualquier linea que empiece con # es un comentario y no se tiene en cuenta.
+# Si una ruta o fichero contiene un espacio pon la linea entre comillas.
+
+#UNA CARPETA
+"c:\Users\fjdelcastillo\source\demo jline3" 
+
+# DOS FICHEROS
+c:\Users\fjdelcastillo\Personal\CONTRASEÑAS.TXT 
+c:\Users\fjdelcastillo\Personal\adicciones.txt 
+
+
