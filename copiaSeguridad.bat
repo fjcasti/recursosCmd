@@ -33,12 +33,35 @@ SET VERCONFIGURACION=FALSE
 SET SILENCIOSO=FALSE
 set TODO_BIEN=TRUE
 set outlook=NO
-
+set temp=
 
 rem vericar los parámetros pasados
 rem bucle parametros
 :bucleParametros
 IF "%~1"=="" GOTO :inicio
+IF /I "%~1"=="/f" (
+    set temp=%2
+    IF NOT "!temp!"=="" (
+        IF NOT "!temp:~0,1!"=="/" (
+            SET "FICHERO_DATOS=%~2"
+            SHIFT
+            SHIFT
+            GOTO :bucleParametros
+        ) ELSE (
+            echo.
+            echo [E] Opción /f sin fichero de datos.
+            echo.
+            goto ayuda
+        )
+    ) ELSE (
+        echo [d] -3- sin datos
+        echo.
+        echo [E] Opción /f sin fichero de datos.
+        echo.
+        goto ayuda
+    )
+)
+
 
 IF /I "%~1"=="/config" (
     set VERCONFIGURACION=TRUE
@@ -65,20 +88,16 @@ goto :bucleParametros
         echo     Realizando copia.  /h o /^? muestra opciones disponibles.
     )
 
-if %VERCONFIGURACION%==FALSE GOTO :hacerCopia
-    echo [ ] Configuración:
-    echo [ ]     Compresor:           %COMPRESOR%d
-    ECHO [ ]     Fichero de datos:    %FICHERO_DATOS%
-    echo [ ]     Copia de seguridad:  %RUTACOPIA%%FICHCOPIA%
-
-:hacerCopia
-
 IF %SILENCIOSO% == FALSE (
-    if %VERCONFIGURACION%==FALSE (
-        ECHO [ ] Fichero de datos:    %FICHERO_DATOS%
-        echo [ ] Copia de seguridad:  %RUTACOPIA%%FICHCOPIA%
+    if %VERCONFIGURACION%==TRUE (  
+        echo [ ] Configuración:
+        echo [ ]     Compresor:           %COMPRESOR%d
+        echo [ ]     Fichero de datos:    %FICHERO_DATOS%
+    )
+    echo [ ]     Copia de seguridad:  %RUTACOPIA%%FICHCOPIA%
     )
 )
+
 
 REM verificando configuración
 
@@ -108,7 +127,7 @@ IF %SILENCIOSO% == FALSE echo [=] Procesando datos:
 for /F "tokens=* EOL=#" %%X in (%FICHERO_DATOS%) do (
 	set elto=%%X
     IF %SILENCIOSO% == FALSE echo [-]     !elto!
-    "%COMPRESOR%" a -r -bso0 -bsp0 "%RUTACOPIA%%FICHCOPIA%" !elto!
+    rem "%COMPRESOR%" a -r -bso0 -bsp0 "%RUTACOPIA%%FICHCOPIA%" !elto!
 
 REM 	if exist !elto! (
 rem 	set ATRIB=%%~aX
@@ -118,7 +137,7 @@ rem		IF NOT !TIPO!==d SET TIPO=!ATRIB:~2,1!
 rem 		ECHO TIPO: !TIPO!
 REM	)
 )
-
+echo [*] quitar comentario
 REM ECHO [D] Duplicando la copia
 REM xcopy /Q /R %DIR1%\* %DIR2%\*
 REM 
@@ -135,12 +154,13 @@ goto :salir
     CALL :muestra_nombre
     echo  lee una lista de ficheros y/o carpetas los comprime y copia.
     echo  Modo de Uso:
-    echo     CopiaSeguridad  [/config] [/h ^| /^?] [/s]
+    echo     CopiaSeguridad  [/config] [/h ^| /^?] [/s] [/f fich.dat]
     echo             /config        muestra la configuración de la aplicación. 
     echo                            No aplica con la opción /s
     echo             /h ^| /^?        muestra la ayuda y termina.
     echo                            No aplican más opciones.
     echo             /s             modo silencioso. Suprime la emisión de mensajes.
+    echo             /f fich.dat    Usa como fichero de datos 'fich.dat' 
     goto :fin
     
 :salir
