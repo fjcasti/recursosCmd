@@ -3,12 +3,13 @@ chcp 65001 > nul
 SET NLS_LANG=AMERICAN_AMERICA.UTF8 
 setlocal ENABLEEXTENSIONS
 setlocal ENABLEDELAYEDEXPANSION 
-echo.
+
 
 rem [x] sin parámetros mostar la ayuda NO. hace una copia y punto.
 rem [x] emitir un pequeño mensaje y hablar del parámetro de ayuda
 rem [x] añadir /h y /? como parámetros para mostar la ayuda.
 REM [ ] parámetro para funcionar en modo silencioso.
+rem [ ] que hacer si se seleccionan mostar configuración y modo silencioso
 rem [ ] si no existe el fichero copiaSeguridad.bat y no se proporciona como parámetro  mostar error / ayuda
 rem [ ] opción que muestre la configuración
 rem [ ] comprobar si un dato dado es fichero o directorio
@@ -25,6 +26,7 @@ rem empaquetador. Este guión usa 7z.exe
 set COMPRESOR=c:\Program Files\7-Zip\7z.exe
 set FICHERO_DATOS=
 SET VERCONFIGURACION=FALSE
+SET SILENCIOSO=FALSE
 
 
 if exist copiaSeguridad.dat SET FICHERO_DATOS=copiaSeguridad.dat
@@ -40,26 +42,34 @@ IF /I "%~1"=="/config" (
     SHIFT 
     GOTO :bucleParametros
 )
+IF /I "%~1"=="/S" (
+    set SILENCIOSO=TRUE
+    SHIFT 
+    GOTO :bucleParametros
+)
 IF /I "%~1"=="/H"  GOTO :AYUDA
 IF /I "%~1"=="/?"  GOTO :AYUDA
+
 
 
 goto :bucleParametros
 
 :inicio
-    echo CopiaSeguridad. v%VERSION%. 
-    echo Realizando copia.  /h o /^? para mas información
- 
+    IF %SILENCIOSO% == FALSE (
+        echo.
+        call :muestra_nombre
+        echo Realizando copia.  /h o /^? para mas información
+    )
 
 if %VERCONFIGURACION%==FALSE GOTO :hacerCopia
     echo [ ] Mostrar configuración
 
 :hacerCopia
 
-
-echo [ ] Leyendo  "%FICHERO_DATOS%"
-ECHO [ ] Creando una copia: %RUTACOPIA%%FICHCOPIA%
-
+IF %SILENCIOSO% == FALSE (
+    echo [ ] Leyendo  "%FICHERO_DATOS%"
+    ECHO [ ] Creando una copia: %RUTACOPIA%%FICHCOPIA%
+)
 
 REM tasklist | find "OUTLOOK.EXE" > nul
 REM if %errorlevel% == 0  ( 
@@ -71,8 +81,8 @@ REM )
 
 for /F "tokens=* EOL=#" %%X in (copiaSeguridad.dat) do (
 	set elto=%%X
-    echo [=] Elto: !elto!
-rem     "%COMPRESOR%" a -r -bso0 -bsp0 "%RUTACOPIA%%FICHCOPIA%" !elto!
+    IF %SILENCIOSO% == FALSE echo [=] Elto: !elto!
+    "%COMPRESOR%" a -r -bso0 -bsp0 "%RUTACOPIA%%FICHCOPIA%" !elto!
 
 REM 	if exist !elto! (
 rem 	set ATRIB=%%~aX
@@ -91,18 +101,24 @@ REM "c:\Users\fdello3\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\U
 REM )
 
 goto :salir
+:muestra_nombre
+    echo CopiaSeguridad. v%VERSION%. 
+    goto :EOF
 
 :ayuda
-    echo  CopiaSeguridad. v%VERSION%. 
+    CALL :muestra_nombre
     echo  lee una lista de ficheros y/o carpetas los comprime y copia.
     echo  Modo de Uso:
-    echo     CopiaSeguridad  [/config] [/h ^| /^?]
+    echo     CopiaSeguridad  [/config] [/h ^| /^?] [/s]
     echo             /config        muestra la configuración de la aplicación.
     echo             /h ^| /^?        muestra la ayuda y termina.
+    echo             /s             modo silencioso. Suprime la emisión de mensajes.
     goto :fin
     
 :salir
-echo [ ] Terminado.
-echo.
+IF %SILENCIOSO% == FALSE (
+    echo [ ] Terminado.
+    echo.
+)
 
 :fin
