@@ -15,8 +15,8 @@ rem [x] si no existe el fichero copiaSeguridad.bat y no se proporciona como par�
 rem [x] verificar la configuración para comprobar el correcto funcionamiento.
 rem [x] añadir parámetro con un fichero de datos diferente al de por defecto.
 rem [x] mostrar la configuración solo muestra la configuración
-rem [ ] añadir parámetro con una ubicación destino diferente
-rem [ ] añadir parámetro para cambiar el nombre de la copia de seguridad.
+rem [x] añadir parámetro con una ubicación destino diferente
+rem [x] añadir parámetro para cambiar el nombre de la copia de seguridad.
 rem [ ] Copiar el fichero de datos de outlook
 rem [ ] Duplicar la copia en una segunda ubicación.
 
@@ -82,6 +82,28 @@ IF /I "%~1"=="/d" (
     ) ELSE (
         echo.
         echo [E] Opción /d sin directorio de destino
+        echo.
+        goto ayuda
+    )
+)
+
+IF /I "%~1"=="/n" (
+    set temp=%2
+    IF NOT "!temp!"=="" (
+        IF NOT "!temp:~0,1!"=="/" (
+            SET "NOM_COPIA=%~2"
+            SHIFT
+            SHIFT
+            GOTO :bucleParametros
+        ) ELSE (
+            echo.
+            echo [E] Opción /n sin nombre de fichero
+            echo.
+            goto ayuda
+        )
+    ) ELSE (
+        echo.
+        echo [E] Opción /n sin nombre de fichero
         echo.
         goto ayuda
     )
@@ -184,6 +206,9 @@ goto :salir
     echo             /s             modo silencioso. Suprime la emisión de mensajes.
     echo             /f fich.dat    Usa como fichero de datos 'fich.dat' 
     echo             /d destino     Usa 'destino' como ubicación donde dejar la copia de seguridad.
+    echo             /n nombre      Usa 'nombre' como nombre del fichero de copia.
+    echo                            Siempre se le añade instante de creación y la extensión se fija
+    echo                            por el empaquetador usado y debe cambiarse en el código.
     goto :fin
     
 :salir
