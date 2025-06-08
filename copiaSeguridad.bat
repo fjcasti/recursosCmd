@@ -64,6 +64,28 @@ IF /I "%~1"=="/f" (
     )
 )
 
+IF /I "%~1"=="/d" (
+    set temp=%2
+    IF NOT "!temp!"=="" (
+        IF NOT "!temp:~0,1!"=="/" (
+            SET "RUTACOPIA=%~2"
+            IF NOT !RUTACOPIA:~-1!==\ SET "RUTACOPIA=!RUTACOPIA!\"
+            SHIFT
+            SHIFT
+            GOTO :bucleParametros
+        ) ELSE (
+            echo.
+            echo [E] Opción /d sin directorio de destino
+            echo.
+            goto ayuda
+        )
+    ) ELSE (
+        echo.
+        echo [E] Opción /d sin directorio de destino
+        echo.
+        goto ayuda
+    )
+)
 
 
 IF /I "%~1"=="/S" (
@@ -161,6 +183,7 @@ goto :salir
     echo             /h ^| /^?        muestra la ayuda y termina. Ignora el resto de opciones.
     echo             /s             modo silencioso. Suprime la emisión de mensajes.
     echo             /f fich.dat    Usa como fichero de datos 'fich.dat' 
+    echo             /d destino     Usa 'destino' como ubicación donde dejar la copia de seguridad.
     goto :fin
     
 :salir
