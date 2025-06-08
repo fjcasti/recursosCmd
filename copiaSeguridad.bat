@@ -13,19 +13,21 @@ rem [x] opción que muestre la configuración
 rem [x] que hacer si se seleccionan mostar configuración y modo silencioso
 rem [x] si no existe el fichero copiaSeguridad.bat y no se proporciona como parámetro  mostar error / ayuda
 rem [x] verificar la configuración para comprobar el correcto funcionamiento.
-rem [ ] añadir parámetro con un fichero de datos diferente al de por defecto.
+rem [x] añadir parámetro con un fichero de datos diferente al de por defecto.
+rem [x] mostrar la configuración solo muestra la configuración
 rem [ ] añadir parámetro con una ubicación destino diferente
 rem [ ] añadir parámetro para cambiar el nombre de la copia de seguridad.
 rem [ ] Copiar el fichero de datos de outlook
 rem [ ] Duplicar la copia en una segunda ubicación.
 
 
-set VERSION=0.1
+set VERSION=1.9
 set ahora=%date:~6,4%%date:~3,2%%date:~0,2%%time:~0,2%%time:~3,2%%time:~6,2%
 set ahora=%ahora: =0%
-rem aquí se hace la compresión
+REM ES DIRECTORIO, HA DE TERMINAR EN \
 set RUTACOPIA=.\
-set FICHCOPIA=copiaSeguridad%ahora%.7z
+set NOM_COPIA=copiaSeguridad
+SET EXT_COPIA=7Z
 SET FICHERO_DATOS=copiaSeguridad.dat
 rem empaquetador. Este guión usa 7z.exe
 set COMPRESOR=c:\Program Files\7-Zip\7z.exe
@@ -63,40 +65,39 @@ IF /I "%~1"=="/f" (
 )
 
 
-IF /I "%~1"=="/config" (
-    set VERCONFIGURACION=TRUE
-    SHIFT 
-    GOTO :bucleParametros
-)
+
 IF /I "%~1"=="/S" (
     set SILENCIOSO=TRUE
-    set VERCONFIGURACION=FALSE
     SHIFT 
     GOTO :bucleParametros
 )
-IF /I "%~1"=="/H"  GOTO :AYUDA
-IF /I "%~1"=="/?"  GOTO :AYUDA
 
-
+IF /I "%~1"=="/config" GOTO :muestra_config
+IF /I "%~1"=="/H"      GOTO :AYUDA
+IF /I "%~1"=="/?"      GOTO :AYUDA
 
 goto :bucleParametros
 
+:muestra_config
+        echo.
+        call :muestra_nombre
+        echo [ ] Configuración:
+        echo [i]     Compresor:           %COMPRESOR%
+        echo [i]     Fichero de datos:    %FICHERO_DATOS%
+        ECHO [i]     Destino de la copia: %RUTACOPIA%
+        echo [i]     Copia de seguridad:  %NOM_COPIA%_AAAAMMDDhhmmss.%EXT_COPIA%
+
+goto :salir
+
 :inicio
+
+    SET "FICHERO_COPIA=%RUTACOPIA%%NOM_COPIA%_%AHORA%.%EXT_COPIA%"
     IF %SILENCIOSO% == FALSE (
         echo.
         call :muestra_nombre
         echo     Realizando copia.  /h o /^? muestra opciones disponibles.
+        echo     Copia de seguridad:  %RUTACOPIA%%FICHCOPIA%
     )
-
-IF %SILENCIOSO% == FALSE (
-    if %VERCONFIGURACION%==TRUE (  
-        echo [ ] Configuración:
-        echo [ ]     Compresor:           %COMPRESOR%d
-        echo [ ]     Fichero de datos:    %FICHERO_DATOS%
-    )
-    echo [ ]     Copia de seguridad:  %RUTACOPIA%%FICHCOPIA%
-    )
-)
 
 
 REM verificando configuración
@@ -127,7 +128,7 @@ IF %SILENCIOSO% == FALSE echo [=] Procesando datos:
 for /F "tokens=* EOL=#" %%X in (%FICHERO_DATOS%) do (
 	set elto=%%X
     IF %SILENCIOSO% == FALSE echo [-]     !elto!
-    rem "%COMPRESOR%" a -r -bso0 -bsp0 "%RUTACOPIA%%FICHCOPIA%" !elto!
+    "%COMPRESOR%" a -r -bso0 -bsp0 "%RUTACOPIA%%FICHCOPIA%" !elto!
 
 REM 	if exist !elto! (
 rem 	set ATRIB=%%~aX
@@ -155,10 +156,9 @@ goto :salir
     echo  lee una lista de ficheros y/o carpetas los comprime y copia.
     echo  Modo de Uso:
     echo     CopiaSeguridad  [/config] [/h ^| /^?] [/s] [/f fich.dat]
-    echo             /config        muestra la configuración de la aplicación. 
+    echo             /config        muestra la configuración de la aplicación y termina. 
     echo                            No aplica con la opción /s
-    echo             /h ^| /^?        muestra la ayuda y termina.
-    echo                            No aplican más opciones.
+    echo             /h ^| /^?        muestra la ayuda y termina. Ignora el resto de opciones.
     echo             /s             modo silencioso. Suprime la emisión de mensajes.
     echo             /f fich.dat    Usa como fichero de datos 'fich.dat' 
     goto :fin
