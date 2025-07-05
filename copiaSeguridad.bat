@@ -140,7 +140,7 @@ goto :salir
         echo.
         call :muestra_nombre
         echo     Realizando copia.  /h o /^? muestra opciones disponibles.
-        echo     Copia de seguridad:  %RUTACOPIA%%FICHCOPIA%
+        echo     Copia de seguridad:  %FICHERO_COPIA%
     )
 
 
@@ -168,21 +168,15 @@ REM 	set outlook=SI
 REM 	taskkill /F /IM OUTLOOK.EXE > NUL
 REM 	WAITFOR /T 1 CASTICOPIASEGURIDAD 2> NUL 
 REM )
+
+
 IF %SILENCIOSO% == FALSE echo [=] Procesando datos:
 for /F "tokens=* EOL=#" %%X in (%FICHERO_DATOS%) do (
 	set elto=%%X
     IF %SILENCIOSO% == FALSE echo [-]     !elto!
-    "%COMPRESOR%" a -r -bso0 -bsp0 "%RUTACOPIA%%FICHCOPIA%" !elto!
-
-REM 	if exist !elto! (
-rem 	set ATRIB=%%~aX
-rem		ECHO atrib !ATRIB!
-rem		SET TIPO=!ATRIB:~0,1!
-rem		IF NOT !TIPO!==d SET TIPO=!ATRIB:~2,1!
-rem 		ECHO TIPO: !TIPO!
-REM	)
+    "%COMPRESOR%" a -r -bso0 -bsp0 "%FICHERO_COPIA%" !elto!
 )
-echo [*] quitar comentario
+
 REM ECHO [D] Duplicando la copia
 REM xcopy /Q /R %DIR1%\* %DIR2%\*
 REM 
