@@ -1,7 +1,7 @@
 @echo off
 SETLOCAL EnableDelayedExpansion
-REM v1.4 Añadida opción /T para abrir solo Total Commander en carpeta de tarea.
-REM v1.3 Abrir el navegador con la URL de mantis y el código de la tarea
+REM v2.1 Añadida opción /T para abrir solo Total Commander en carpeta de tarea.
+REM v2.0 Abrir el navegador con la URL de mantis y el código de la tarea
 rem      añadida la función lanzar_apps para todos.
 rem      No abrir navegador si el código comienza con 0x (tareas personales).
 rem      Integración con Total Commander: abre el directorio de la tarea en panel izquierdo.
