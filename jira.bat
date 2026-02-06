@@ -1,8 +1,9 @@
 @echo off
 SETLOCAL EnableDelayedExpansion
-REM v1.5 Formato de archivo leeme mejorado. Markdown
-REM v1.4 Añadida opción /T para abrir solo Total Commander en carpeta de tarea.
-REM v1.3 Abrir el navegador con la URL de mantis y el código de la tarea
+
+REM v2.1 Añadida opción /T para abrir solo Total Commander en carpeta de tarea.
+REM v2.0 Abrir el navegador con la URL de mantis y el código de la tarea
+
 rem      añadida la función lanzar_apps para todos.
 rem      No abrir navegador si el código comienza con 0x (tareas personales).
 rem      Integración con Total Commander: abre el directorio de la tarea en panel izquierdo.
@@ -240,10 +241,8 @@ rem *** Búsqueda de texto en tareas cerradas **********************************
 	SET ARCHIVO_LEEME=%NUEVA_CARPETA%\%CODIGO%.leeme
     
     IF NOT EXIST "%ARCHIVO_LEEME%" (
-        ECHO # Tarea %CODIGO% :   %TITULO% > "%ARCHIVO_LEEME%"
-        ECHO. >> "%ARCHIVO_LEEME%"
-        ECHO ## Notas  >> "%ARCHIVO_LEEME%"
-        ECHO. >> "%ARCHIVO_LEEME%"
+        ECHO Notas de la tarea: %CODIGO% > "%ARCHIVO_LEEME%"
+        ECHO                    %TITULO% >> "%ARCHIVO_LEEME%"
     )
 
     GOTO :lanzar_apps
