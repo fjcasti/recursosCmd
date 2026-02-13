@@ -231,7 +231,11 @@ rem *** Búsqueda de texto en tareas cerradas **********************************
     IF EXIST "%RUTA_CERR%\%CODIGO%*" GOTO reabrir_tarea_cerrada
     
     REM Si no existe en ningún sitio, crear nueva tarea
-    SET "NUEVA_CARPETA=%RUTA_BASE%\%CODIGO% %TITULO%"
+    IF "%TITULO%"=="" (
+        SET "NUEVA_CARPETA=%RUTA_BASE%\%CODIGO%"
+    ) ELSE (
+        SET "NUEVA_CARPETA=%RUTA_BASE%\%CODIGO% %TITULO%"
+    )
 
     IF not  EXIST "%NUEVA_CARPETA%" (
         MD "%NUEVA_CARPETA%"
