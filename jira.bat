@@ -241,12 +241,14 @@ rem *** Búsqueda de texto en tareas cerradas **********************************
         MD "%NUEVA_CARPETA%"
         ECHO [ ] Carpeta creada: %NUEVA_CARPETA%
     )
-	
+
 	SET ARCHIVO_LEEME=%NUEVA_CARPETA%\%CODIGO%.leeme
-    
+
     IF NOT EXIST "%ARCHIVO_LEEME%" (
         ECHO Notas de la tarea: %CODIGO% > "%ARCHIVO_LEEME%"
-        ECHO                    %TITULO% >> "%ARCHIVO_LEEME%"
+        IF "%TITULO%" NEQ "" (
+            ECHO                    %TITULO% >> "%ARCHIVO_LEEME%"
+        ) 
     )
 
     GOTO :lanzar_apps
