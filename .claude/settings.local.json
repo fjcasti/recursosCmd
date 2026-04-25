@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:www.ghisler.ch)",
+      "Bash(git *)"
+    ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "bash",
+            "statusMessage": "Guardando cambios en git...",
+            "command": "if ! git status --porcelain 2>/dev/null | grep -q .; then exit 0; fi; CHANGED=$(git status --porcelain | awk '{print $NF}' | tr '\n' ', ' | sed 's/,$//'); git add -A && git commit -m \"Auto: $CHANGED\" && git push 2>/dev/null || true"
+          }
+        ]
+      }
+    ]
+  }
+}
