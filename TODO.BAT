@@ -6,7 +6,9 @@ set "TEMPFILE=%~dp0TODO.TMP"
 
 if not exist "%DATAFILE%" type nul > "%DATAFILE%"
 
-for %%p in (%*) do if /i "%%p"=="/?" goto :show_help
+if /i "%~1"=="/?" goto :show_help
+if /i "%~2"=="/?" goto :show_help
+if /i "%~3"=="/?" goto :show_help
 
 if "%~1"=="" goto :show_pending
 if /i "%~1"=="/a" goto :add_task
@@ -27,7 +29,7 @@ echo.
 echo  Uso: TODO [opcion] [argumentos]
 echo.
 echo  (sin opciones)         Lista las tareas pendientes
-echo  /?                     Muestra esta ayuda
+echo( /?                     Muestra esta ayuda
 echo  /a ^<titulo^>            Crea una nueva tarea
 echo  /l                     Lista todas las tareas
 echo  /c ^<numero^>            Completa la tarea indicada
