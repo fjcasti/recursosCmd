@@ -19,6 +19,7 @@ if /i "%~1"=="/c" goto :complete_task
 if /i "%~1"=="/d" goto :detail_task
 if /i "%~1"=="/n" goto :add_note
 if /i "%~1"=="/+" goto :boost_task
+if /i "%~1"=="/-" goto :lower_task
 
 :: ============================================================
 :show_help
@@ -34,7 +35,8 @@ echo  /l                       Lista todas las tareas
 echo  /c ^<numero^>            Completa la tarea indicada
 echo  /d ^<numero^>            Muestra el detalle de la tarea
 echo  /n ^<numero^> ^<nota^>   Añade una nota a la tarea
-echo  /+ ^<numero^>            Asigna prioridad maxima a la tarea
+echo  /+ ^<numero^>            Incrementa la prioridad de la tarea en 1
+echo  /- ^<numero^>            Decrementa la prioridad de la tarea en 1
 echo.
 goto :end
 
@@ -52,32 +54,31 @@ goto :end
 :do_list
 set "_showall=%~1"
 set "_shown=0"
+set "_maxprio=0"
 for /f "usebackq tokens=1-5* delims=|" %%a in ("%DATAFILE%") do (
     if /i "%%a"=="T" (
-        if "%%c"=="1" (
+        set /a "_p=%%c"
+        if !_p! GTR !_maxprio! set "_maxprio=!_p!"
+    )
+)
+set /a "_curprio=_maxprio"
+:_prio_iter
+for /f "usebackq tokens=1-5* delims=|" %%a in ("%DATAFILE%") do (
+    if /i "%%a"=="T" (
+        set /a "_p=%%c"
+        if !_p! EQU !_curprio! (
             if "!_showall!"=="1" (
-                call :print_row %%b "%%e" "%%f" "+"
+                call :print_row %%b "%%e" "%%f" !_curprio!
                 set /a _shown+=1
             ) else if "%%e"=="0" (
-                call :print_row %%b "%%e" "%%f" "+"
+                call :print_row %%b "%%e" "%%f" !_curprio!
                 set /a _shown+=1
             )
         )
     )
 )
-for /f "usebackq tokens=1-5* delims=|" %%a in ("%DATAFILE%") do (
-    if /i "%%a"=="T" (
-        if "%%c"=="0" (
-            if "!_showall!"=="1" (
-                call :print_row %%b "%%e" "%%f" " "
-                set /a _shown+=1
-            ) else if "%%e"=="0" (
-                call :print_row %%b "%%e" "%%f" " "
-                set /a _shown+=1
-            )
-        )
-    )
-)
+set /a "_curprio-=1"
+if !_curprio! GEQ 0 goto :_prio_iter
 if !_shown!==0 (
     if "!_showall!"=="1" (
         echo No hay tareas registradas.
@@ -91,13 +92,15 @@ goto :eof
 set /a "_rn=%~1"
 set "_rc=%~2"
 set "_rt=%~3"
-set "_rp=%~4"
+set /a "_rp=%~4"
 set "_mark= "
 if "!_rc!" neq "0" set "_mark=X"
+set "_ppfx=  "
+if !_rp! GTR 0 set "_ppfx=!_rp! "
 if !_rn! LSS 10 (
-    echo !_rp! 0!_rn! [!_mark!] !_rt!
+    echo !_ppfx!0!_rn! [!_mark!] !_rt!
 ) else (
-    echo !_rp! !_rn! [!_mark!] !_rt!
+    echo !_ppfx!!_rn! [!_mark!] !_rt!
 )
 goto :eof
 
@@ -197,13 +200,13 @@ if "%~2"=="" (
 )
 set /a "_target=%~2"
 set "_found=0"
-set "_already=0"
+set "_curprio=0"
 for /f "usebackq tokens=1-5* delims=|" %%a in ("%DATAFILE%") do (
     if /i "%%a"=="T" (
         set /a "_cn=%%b"
         if !_cn! EQU !_target! (
             set "_found=1"
-            if "%%c"=="1" set "_already=1"
+            set /a "_curprio=%%c"
         )
     )
 )
@@ -211,10 +214,7 @@ if "!_found!"=="0" (
     echo Error: La tarea !_target! no existe.
     goto :end
 )
-if "!_already!"=="1" (
-    echo La tarea !_target! ya tiene prioridad maxima.
-    goto :end
-)
+set /a "_newprio=_curprio+1"
 if exist "%TEMPFILE%" del "%TEMPFILE%"
 for /f "usebackq delims=" %%L in ("%DATAFILE%") do (
     set "_line=%%L"
@@ -227,7 +227,7 @@ for /f "usebackq delims=" %%L in ("%DATAFILE%") do (
     )
     if "!_is_target!"=="1" (
         for /f "tokens=1-5* delims=|" %%a in ("!_line!") do (
-            echo T^|%%b^|1^|%%d^|%%e^|%%f>> "%TEMPFILE%"
+            echo T^|%%b^|!_newprio!^|%%d^|%%e^|%%f>> "%TEMPFILE%"
         )
     ) else (
         echo !_line!>> "%TEMPFILE%"
@@ -235,9 +235,63 @@ for /f "usebackq delims=" %%L in ("%DATAFILE%") do (
 )
 move /y "%TEMPFILE%" "%DATAFILE%" >nul
 if !_target! LSS 10 (
-    echo Tarea 0!_target! marcada con prioridad maxima.
+    echo Tarea 0!_target! prioridad: !_curprio! -^> !_newprio!
 ) else (
-    echo Tarea !_target! marcada con prioridad maxima.
+    echo Tarea !_target! prioridad: !_curprio! -^> !_newprio!
+)
+goto :end
+
+:: ============================================================
+:lower_task
+if "%~2"=="" (
+    echo Error: Especifique el numero de tarea.
+    echo Uso: TODO /- ^<numero^>
+    goto :end
+)
+set /a "_target=%~2"
+set "_found=0"
+set "_curprio=0"
+for /f "usebackq tokens=1-5* delims=|" %%a in ("%DATAFILE%") do (
+    if /i "%%a"=="T" (
+        set /a "_cn=%%b"
+        if !_cn! EQU !_target! (
+            set "_found=1"
+            set /a "_curprio=%%c"
+        )
+    )
+)
+if "!_found!"=="0" (
+    echo Error: La tarea !_target! no existe.
+    goto :end
+)
+if !_curprio! EQU 0 (
+    echo La tarea !_target! ya tiene prioridad minima ^(0^).
+    goto :end
+)
+set /a "_newprio=_curprio-1"
+if exist "%TEMPFILE%" del "%TEMPFILE%"
+for /f "usebackq delims=" %%L in ("%DATAFILE%") do (
+    set "_line=%%L"
+    set "_is_target=0"
+    for /f "tokens=1,2 delims=|" %%a in ("!_line!") do (
+        if /i "%%a"=="T" (
+            set /a "_ln=%%b"
+            if !_ln! EQU !_target! set "_is_target=1"
+        )
+    )
+    if "!_is_target!"=="1" (
+        for /f "tokens=1-5* delims=|" %%a in ("!_line!") do (
+            echo T^|%%b^|!_newprio!^|%%d^|%%e^|%%f>> "%TEMPFILE%"
+        )
+    ) else (
+        echo !_line!>> "%TEMPFILE%"
+    )
+)
+move /y "%TEMPFILE%" "%DATAFILE%" >nul
+if !_target! LSS 10 (
+    echo Tarea 0!_target! prioridad: !_curprio! -^> !_newprio!
+) else (
+    echo Tarea !_target! prioridad: !_curprio! -^> !_newprio!
 )
 goto :end
 
@@ -273,11 +327,7 @@ if !_target! LSS 10 (
     echo  Tarea  : !_target!
 )
 echo  Titulo : !_dtitle!
-if "!_dprio!"=="1" (
-    echo  Prio   : ALTA
-) else (
-    echo  Prio   : Normal
-)
+echo  Prio   : !_dprio!
 call :fmt_dt "!_dcreated!" _disp_c
 echo  Creada : !_disp_c!
 if "!_dcomp!"=="0" (
