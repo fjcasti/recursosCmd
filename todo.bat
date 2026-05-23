@@ -94,13 +94,15 @@ set "_rc=%~2"
 set "_rt=%~3"
 set /a "_rp=%~4"
 set "_mark= "
-if "!_rc!" neq "0" set "_mark=X"
-set "_ppfx=  "
-if !_rp! GTR 0 set "_ppfx=!_rp! "
+if "!_rc!" neq "0" (
+    set "_mark=X"
+) else if !_rp! GTR 0 (
+    set "_mark=!_rp!"
+)
 if !_rn! LSS 10 (
-    echo !_ppfx!0!_rn! [!_mark!] !_rt!
+    echo 0!_rn! [!_mark!] !_rt!
 ) else (
-    echo !_ppfx!!_rn! [!_mark!] !_rt!
+    echo !_rn! [!_mark!] !_rt!
 )
 goto :eof
 
