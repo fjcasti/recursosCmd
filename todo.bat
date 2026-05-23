@@ -1,4 +1,7 @@
 @echo off
+@echo off
+set NLS_LANG=AMERICAN_AMERICA.UTF8
+chcp 65001 > nul
 setlocal enabledelayedexpansion
 
 set "DATAFILE=%~dp0TODO.HAZ"
@@ -17,10 +20,6 @@ if /i "%~1"=="/c" goto :complete_task
 if /i "%~1"=="/d" goto :detail_task
 if /i "%~1"=="/n" goto :add_note
 
-echo Parametro no reconocido: %~1
-echo Use /? para ver la ayuda.
-goto :end
-
 :: ============================================================
 :show_help
 echo.
@@ -28,13 +27,13 @@ echo  TODO.BAT - Gestor de tareas pendientes
 echo.
 echo  Uso: TODO [opcion] [argumentos]
 echo.
-echo  (sin opciones)         Lista las tareas pendientes
-echo( /?                     Muestra esta ayuda
+echo  (sin opciones)           Lista las tareas pendientes
+echo( /?                       Muestra esta ayuda
 echo  /a ^<titulo^>            Crea una nueva tarea
-echo  /l                     Lista todas las tareas
+echo  /l                       Lista todas las tareas
 echo  /c ^<numero^>            Completa la tarea indicada
 echo  /d ^<numero^>            Muestra el detalle de la tarea
-echo  /n ^<numero^> ^<nota^>    Aniade una nota a la tarea
+echo  /n ^<numero^> ^<nota^>   Añade una nota a la tarea
 echo.
 goto :end
 
@@ -96,11 +95,13 @@ if "%~2"=="" (
     goto :end
 )
 set "_title=%~2"
+
 :_loop_title
 shift /2
 if "%~2"=="" goto :_do_add
 set "_title=!_title! %~2"
 goto :_loop_title
+
 :_do_add
 call :get_now
 set "_max=0"
@@ -233,6 +234,7 @@ set "_ov=%~2"
 set "!_ov!=!_ds:~6,2!/!_ds:~4,2!/!_ds:~0,4! !_ds:~8,2!:!_ds:~10,2!:!_ds:~12,2!"
 goto :eof
 
+
 :: ============================================================
 :add_note
 if "%~2"=="" (
@@ -247,11 +249,13 @@ if "%~3"=="" (
     goto :end
 )
 set "_note=%~3"
+
 :_loop_note
 shift /3
 if "%~3"=="" goto :_do_note
 set "_note=!_note! %~3"
 goto :_loop_note
+
 :_do_note
 set "_found=0"
 for /f "usebackq tokens=1,2 delims=|" %%a in ("%DATAFILE%") do (
