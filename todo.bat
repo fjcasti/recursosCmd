@@ -305,6 +305,10 @@ if "%~2"=="" (
     goto :end
 )
 set /a "_target=%~2"
+call :show_detail
+goto :end
+
+:show_detail
 set "_found=0"
 for /f "usebackq tokens=1-5* delims=|" %%a in ("%DATAFILE%") do (
     if /i "%%a"=="T" (
@@ -320,7 +324,7 @@ for /f "usebackq tokens=1-5* delims=|" %%a in ("%DATAFILE%") do (
 )
 if "!_found!"=="0" (
     echo Error: La tarea !_target! no existe.
-    goto :end
+    goto :eof
 )
 echo.
 if !_target! LSS 10 (
@@ -351,7 +355,7 @@ for /f "usebackq tokens=1-2* delims=|" %%a in ("%DATAFILE%") do (
 )
 if "!_has_notes!"=="0" echo    (sin notas)
 echo.
-goto :end
+goto :eof
 
 :fmt_dt
 set "_ds=%~1"
@@ -393,11 +397,7 @@ if "!_found!"=="0" (
     goto :end
 )
 echo N^|!_target!^|!_note!>> "%DATAFILE%"
-if !_target! LSS 10 (
-    echo Nota aniadida a la tarea 0!_target!.
-) else (
-    echo Nota aniadida a la tarea !_target!.
-)
+call :show_detail
 goto :end
 
 :: ============================================================
