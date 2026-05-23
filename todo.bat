@@ -1,5 +1,4 @@
 @echo off
-@echo off
 set NLS_LANG=AMERICAN_AMERICA.UTF8
 chcp 65001 > nul
 setlocal enabledelayedexpansion
@@ -19,6 +18,7 @@ if /i "%~1"=="/l" goto :show_all
 if /i "%~1"=="/c" goto :complete_task
 if /i "%~1"=="/d" goto :detail_task
 if /i "%~1"=="/n" goto :add_note
+if /i "%~1"=="/+" goto :boost_task
 
 :: ============================================================
 :show_help
@@ -34,6 +34,7 @@ echo  /l                       Lista todas las tareas
 echo  /c ^<numero^>            Completa la tarea indicada
 echo  /d ^<numero^>            Muestra el detalle de la tarea
 echo  /n ^<numero^> ^<nota^>   Añade una nota a la tarea
+echo  /+ ^<numero^>            Asigna prioridad maxima a la tarea
 echo.
 goto :end
 
@@ -46,22 +47,32 @@ goto :end
 call :do_list 1
 goto :end
 
+:: Formato: T|id|prio|created|completed|title  (tokens=1-5*)
+::   %%a=T  %%b=id  %%c=prio  %%d=created  %%e=completed  %%f=title
 :do_list
 set "_showall=%~1"
 set "_shown=0"
-for /f "usebackq tokens=1-4* delims=|" %%a in ("%DATAFILE%") do (
+for /f "usebackq tokens=1-5* delims=|" %%a in ("%DATAFILE%") do (
     if /i "%%a"=="T" (
-        set "_n=%%b"
-        set "_comp=%%d"
-        set "_title=%%e"
-        set "_mark= "
-        if "!_comp!" neq "0" set "_mark=X"
-        if "!_showall!"=="1" (
-            call :print_row !_n! "!_mark!" "!_title!"
-            set /a _shown+=1
-        ) else (
-            if "!_comp!"=="0" (
-                call :print_row !_n! "!_mark!" "!_title!"
+        if "%%c"=="1" (
+            if "!_showall!"=="1" (
+                call :print_row %%b "%%e" "%%f" "+"
+                set /a _shown+=1
+            ) else if "%%e"=="0" (
+                call :print_row %%b "%%e" "%%f" "+"
+                set /a _shown+=1
+            )
+        )
+    )
+)
+for /f "usebackq tokens=1-5* delims=|" %%a in ("%DATAFILE%") do (
+    if /i "%%a"=="T" (
+        if "%%c"=="0" (
+            if "!_showall!"=="1" (
+                call :print_row %%b "%%e" "%%f" " "
+                set /a _shown+=1
+            ) else if "%%e"=="0" (
+                call :print_row %%b "%%e" "%%f" " "
                 set /a _shown+=1
             )
         )
@@ -78,12 +89,15 @@ goto :eof
 
 :print_row
 set /a "_rn=%~1"
-set "_rm=%~2"
+set "_rc=%~2"
 set "_rt=%~3"
+set "_rp=%~4"
+set "_mark= "
+if "!_rc!" neq "0" set "_mark=X"
 if !_rn! LSS 10 (
-    echo 0!_rn! [!_rm!] !_rt!
+    echo !_rp! 0!_rn! [!_mark!] !_rt!
 ) else (
-    echo !_rn! [!_rm!] !_rt!
+    echo !_rp! !_rn! [!_mark!] !_rt!
 )
 goto :eof
 
@@ -112,7 +126,7 @@ for /f "usebackq tokens=1,2 delims=|" %%a in ("%DATAFILE%") do (
     )
 )
 set /a "_next=_max+1"
-echo T^|!_next!^|!_now!^|0^|!_title!>> "%DATAFILE%"
+echo T^|!_next!^|0^|!_now!^|0^|!_title!>> "%DATAFILE%"
 if !_next! LSS 10 (
     echo Tarea 0!_next! creada: !_title!
 ) else (
@@ -130,12 +144,12 @@ if "%~2"=="" (
 set /a "_target=%~2"
 set "_found=0"
 set "_done=0"
-for /f "usebackq tokens=1-4 delims=|" %%a in ("%DATAFILE%") do (
+for /f "usebackq tokens=1-5* delims=|" %%a in ("%DATAFILE%") do (
     if /i "%%a"=="T" (
         set /a "_cn=%%b"
         if !_cn! EQU !_target! (
             set "_found=1"
-            if "%%d" neq "0" set "_done=1"
+            if "%%e" neq "0" set "_done=1"
         )
     )
 )
@@ -159,8 +173,8 @@ for /f "usebackq delims=" %%L in ("%DATAFILE%") do (
         )
     )
     if "!_is_target!"=="1" (
-        for /f "tokens=1-4* delims=|" %%a in ("!_line!") do (
-            echo T^|%%b^|%%c^|!_now!^|%%e>> "%TEMPFILE%"
+        for /f "tokens=1-5* delims=|" %%a in ("!_line!") do (
+            echo T^|%%b^|%%c^|%%d^|!_now!^|%%f>> "%TEMPFILE%"
         )
     ) else (
         echo !_line!>> "%TEMPFILE%"
@@ -175,6 +189,59 @@ if !_target! LSS 10 (
 goto :end
 
 :: ============================================================
+:boost_task
+if "%~2"=="" (
+    echo Error: Especifique el numero de tarea.
+    echo Uso: TODO /+ ^<numero^>
+    goto :end
+)
+set /a "_target=%~2"
+set "_found=0"
+set "_already=0"
+for /f "usebackq tokens=1-5* delims=|" %%a in ("%DATAFILE%") do (
+    if /i "%%a"=="T" (
+        set /a "_cn=%%b"
+        if !_cn! EQU !_target! (
+            set "_found=1"
+            if "%%c"=="1" set "_already=1"
+        )
+    )
+)
+if "!_found!"=="0" (
+    echo Error: La tarea !_target! no existe.
+    goto :end
+)
+if "!_already!"=="1" (
+    echo La tarea !_target! ya tiene prioridad maxima.
+    goto :end
+)
+if exist "%TEMPFILE%" del "%TEMPFILE%"
+for /f "usebackq delims=" %%L in ("%DATAFILE%") do (
+    set "_line=%%L"
+    set "_is_target=0"
+    for /f "tokens=1,2 delims=|" %%a in ("!_line!") do (
+        if /i "%%a"=="T" (
+            set /a "_ln=%%b"
+            if !_ln! EQU !_target! set "_is_target=1"
+        )
+    )
+    if "!_is_target!"=="1" (
+        for /f "tokens=1-5* delims=|" %%a in ("!_line!") do (
+            echo T^|%%b^|1^|%%d^|%%e^|%%f>> "%TEMPFILE%"
+        )
+    ) else (
+        echo !_line!>> "%TEMPFILE%"
+    )
+)
+move /y "%TEMPFILE%" "%DATAFILE%" >nul
+if !_target! LSS 10 (
+    echo Tarea 0!_target! marcada con prioridad maxima.
+) else (
+    echo Tarea !_target! marcada con prioridad maxima.
+)
+goto :end
+
+:: ============================================================
 :detail_task
 if "%~2"=="" (
     echo Error: Especifique el numero de tarea.
@@ -183,14 +250,15 @@ if "%~2"=="" (
 )
 set /a "_target=%~2"
 set "_found=0"
-for /f "usebackq tokens=1-4* delims=|" %%a in ("%DATAFILE%") do (
+for /f "usebackq tokens=1-5* delims=|" %%a in ("%DATAFILE%") do (
     if /i "%%a"=="T" (
         set /a "_cn=%%b"
         if !_cn! EQU !_target! (
             set "_found=1"
-            set "_dtitle=%%e"
-            set "_dcreated=%%c"
-            set "_dcomp=%%d"
+            set "_dprio=%%c"
+            set "_dcreated=%%d"
+            set "_dcomp=%%e"
+            set "_dtitle=%%f"
         )
     )
 )
@@ -205,6 +273,11 @@ if !_target! LSS 10 (
     echo  Tarea  : !_target!
 )
 echo  Titulo : !_dtitle!
+if "!_dprio!"=="1" (
+    echo  Prio   : ALTA
+) else (
+    echo  Prio   : Normal
+)
 call :fmt_dt "!_dcreated!" _disp_c
 echo  Creada : !_disp_c!
 if "!_dcomp!"=="0" (
@@ -233,7 +306,6 @@ set "_ds=%~1"
 set "_ov=%~2"
 set "!_ov!=!_ds:~6,2!/!_ds:~4,2!/!_ds:~0,4! !_ds:~8,2!:!_ds:~10,2!:!_ds:~12,2!"
 goto :eof
-
 
 :: ============================================================
 :add_note
