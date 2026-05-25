@@ -186,12 +186,7 @@ for /f "usebackq delims=" %%L in ("%DATAFILE%") do (
     )
 )
 move /y "%TEMPFILE%" "%DATAFILE%" >nul
-if !_target! LSS 10 (
-    echo Tarea 0!_target! marcada como completada.
-) else (
-    echo Tarea !_target! marcada como completada.
-)
-goto :end
+goto :show_pending
 
 :: ============================================================
 :boost_task
