@@ -25,7 +25,7 @@ for /l %%i in (1,1,!_n!) do (
     set "_mark= "
     fc /b "%USERPROFILE%\.gitconfig" "%USERPROFILE%\.gitconfig.!_profile_%%i!" >nul 2>nul
     if !errorlevel! EQU 0 set "_mark=*"
-    echo %%i!_mark!. !_profile_%%i!
+    echo %%i [!_mark!] !_profile_%%i!
 )
 
 :end
