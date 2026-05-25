@@ -3,8 +3,8 @@ set NLS_LANG=AMERICAN_AMERICA.UTF8
 chcp 65001 > nul
 setlocal enabledelayedexpansion
 
-set "DATAFILE=%~dp0TODO.HAZ"
-set "TEMPFILE=%~dp0TODO.TMP"
+set "DATAFILE=%~dp0todo.dat"
+set "TEMPFILE=%~dp0todo.tmp"
 
 if not exist "%DATAFILE%" type nul > "%DATAFILE%"
 
