@@ -21,7 +21,12 @@ copy /Y "%USERPROFILE%\.gitconfig.!_chosen!" "%USERPROFILE%\.gitconfig"
 goto :end
 
 :list
-for /l %%i in (1,1,!_n!) do echo %%i. !_profile_%%i!
+for /l %%i in (1,1,!_n!) do (
+    set "_mark= "
+    fc /b "%USERPROFILE%\.gitconfig" "%USERPROFILE%\.gitconfig.!_profile_%%i!" >nul 2>nul
+    if !errorlevel! EQU 0 set "_mark=*"
+    echo %%i!_mark!. !_profile_%%i!
+)
 
 :end
 endlocal
