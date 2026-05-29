@@ -1,4 +1,4 @@
-@echo off
+﻿@echo off
 set NLS_LANG=AMERICAN_AMERICA.UTF8
 chcp 65001 > nul
 setlocal enabledelayedexpansion
@@ -20,6 +20,7 @@ if /i "%~1"=="/d" goto :detail_task
 if /i "%~1"=="/n" goto :add_note
 if /i "%~1"=="/+" goto :boost_task
 if /i "%~1"=="/-" goto :lower_task
+if /i "%~1"=="/compacta" goto :compact_tasks
 
 :: ============================================================
 :show_help
@@ -37,6 +38,7 @@ echo  /d ^<numero^>            Muestra el detalle de la tarea
 echo  /n ^<numero^> ^<nota^>   Añade una nota a la tarea
 echo  /+ ^<numero^>            Incrementa la prioridad de la tarea en 1
 echo  /- ^<numero^>            Decrementa la prioridad de la tarea en 1
+echo  /compacta               Elimina tareas completadas y renumera las restantes
 echo.
 goto :end
 
@@ -394,6 +396,58 @@ if "!_found!"=="0" (
 echo N^|!_target!^|!_note!>> "%DATAFILE%"
 call :show_detail
 goto :end
+
+:: ============================================================
+:compact_tasks
+set "_count_done=0"
+for /f "usebackq tokens=1-5* delims=|" %%a in ("%DATAFILE%") do (
+    if /i "%%a"=="T" (
+        if "%%e" neq "0" set /a "_count_done+=1"
+    )
+)
+if !_count_done!==0 (
+    echo No hay tareas completadas que eliminar.
+    goto :end
+)
+echo Se eliminaran !_count_done! tarea(s) completada(s) y se renumeraran las restantes.
+set /p "_confirm=Confirmar? (S/N): "
+if /i "!_confirm!" neq "S" (
+    echo Operacion cancelada.
+    goto :end
+)
+set "_new_id=0"
+for /f "usebackq tokens=1-5* delims=|" %%a in ("%DATAFILE%") do (
+    if /i "%%a"=="T" (
+        if "%%e"=="0" (
+            set /a "_new_id+=1"
+            set "_map_%%b=!_new_id!"
+        )
+    )
+)
+if exist "%TEMPFILE%" del "%TEMPFILE%"
+type nul > "%TEMPFILE%"
+for /f "usebackq delims=" %%L in ("%DATAFILE%") do (
+    set "_line=%%L"
+    for /f "tokens=1 delims=|" %%a in ("!_line!") do set "_rectype=%%a"
+    if /i "!_rectype!"=="T" (
+        for /f "tokens=1-5* delims=|" %%a in ("!_line!") do (
+            if "%%e"=="0" (
+                set "_newnum=!_map_%%b!"
+                echo T^|!_newnum!^|%%c^|%%d^|%%e^|%%f>> "%TEMPFILE%"
+            )
+        )
+    ) else if /i "!_rectype!"=="N" (
+        for /f "tokens=1-2* delims=|" %%a in ("!_line!") do (
+            set "_newnum=!_map_%%b!"
+            if "!_newnum!" neq "" (
+                echo N^|!_newnum!^|%%c>> "%TEMPFILE%"
+            )
+        )
+    )
+)
+move /y "%TEMPFILE%" "%DATAFILE%" >nul
+echo Compactacion completada: !_count_done! tarea(s) eliminada(s), !_new_id! tarea(s) renumerada(s).
+goto :show_pending
 
 :: ============================================================
 :get_now
