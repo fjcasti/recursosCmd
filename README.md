@@ -14,10 +14,12 @@ Colección de scripts de Windows Batch reutilizables que cubren tareas habituale
 | [`estado_de_bloq_num.bat`](#estado_de_bloq_numbat) | Detecta si Bloq Mayús está activo o no |
 | [`fecha_y_hora_en_variable.bat`](#fecha_y_hora_en_variablebat) | Extrae partes de la fecha y hora del sistema en variables |
 | [`javadk.bat`](#javadkbat) | Selecciona un JDK instalado y configura `JAVA_HOME` y `PATH` |
+| [`gitperf.bat`](#gitperfbat) | Mantiene distintos perfiles para usar con Git |
 | [`jira.bat`](#jirabat) | Gestión de tareas locales con integración en Firefox y Total Commander |
 | [`lee_fichero_ini.bat`](#lee_fichero_inibat) | Lector genérico de ficheros `.ini` por sección y clave |
 | [`miTeclado.bat`](#mitecladobat) | Arranca o detiene PowerToys Keyboard Manager según si el teclado está conectado |
 | [`procesar_parametros_linea_comandos.bat`](#procesar_parametros_linea_comandosbat) | Patrón para procesar parámetros con nombre y posicionales |
+| [`todo.bat`](#todobat) | Gestion de notas/tareas para hacer |
 | [`usar_UTF8_en_consola.bat`](#usar_utf8_en_consolabat) | Configura la consola para mostrar caracteres UTF-8 correctamente |
 
 ---
@@ -52,6 +54,10 @@ Extrae año, mes, día, hora, minuto y segundo del sistema en variables individu
 ### `javadk.bat`
 Lista los JDKs presentes en un directorio configurable, permite seleccionar uno de forma interactiva y actualiza `JAVA_HOME` y `PATH` en el entorno de la sesión actual.
 
+### `gitperf.bat`
+Gestiona **$home/.gitconfig**.  Busca ficheros .gitconfig.xxx en la carpeta HOME. Cada fichero encontrado es tratado como un perfil y su extensión (xxx) como nombre del perfil.
+Sin parámetros numera y muestra los encontrados; con un número selecciona el perfíl de ese número como perfil activo.
+
 ### `jira.bat`
 Sistema de gestión de tareas basado en el sistema de ficheros. Permite crear, abrir, cerrar y buscar tareas, con apertura automática en Firefox y navegación en Total Commander.
 
@@ -67,6 +73,9 @@ Consulta [`miTeclado.md`](miTeclado.md) para la documentación completa.
 
 ### `procesar_parametros_linea_comandos.bat`
 Plantilla comentada para procesar parámetros con nombre (`/flag valor`) y posicionales en scripts Batch, usando `SHIFT` y `ENABLEDELAYEDEXPANSION`.
+
+### `todo.bat`
+Gestiona pequeñas notas de recordatorio para hacer. Permite crearlas, añadirles notas, aumentar o bajar su prioridad, completarlas y borrarlas.
 
 ### `usar_UTF8_en_consola.bat`
 Ejecuta `chcp 65001` y configura `NLS_LANG` para que la consola de Windows muestre correctamente caracteres UTF-8 sin necesidad de cambiar la configuración regional del sistema.
