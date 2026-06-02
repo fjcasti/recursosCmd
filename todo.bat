@@ -25,20 +25,20 @@ if /i "%~1"=="/compacta" goto :compact_tasks
 :: ============================================================
 :show_help
 echo.
-echo  TODO.BAT - Gestor de tareas pendientes
+echo  TODO.BAT 1.2 - Gestor de tareas pendientes
 echo.
 echo  Uso: TODO [opcion] [argumentos]
 echo.
-echo  (sin opciones)           Lista las tareas pendientes
-echo( /?                       Muestra esta ayuda
-echo  /a ^<titulo^>            Crea una nueva tarea
-echo  /l                       Lista todas las tareas
-echo  /c ^<numero^>            Completa la tarea indicada
-echo  /d ^<numero^>            Muestra el detalle de la tarea
-echo  /n ^<numero^> ^<nota^>   Añade una nota a la tarea
-echo  /+ ^<numero^>            Incrementa la prioridad de la tarea en 1
-echo  /- ^<numero^>            Decrementa la prioridad de la tarea en 1
-echo  /compacta               Elimina tareas completadas y renumera las restantes
+echo  (sin opciones)     Lista las tareas pendientes
+echo( /?                 Muestra esta ayuda
+echo  /a XXX             Crea una nueva tarea con el texto XXX
+echo  /l                 Lista todas las tareas
+echo  /c NNN             Completa la tarea con el número NNN
+echo  /d NNN             Muestra el detalle de la tarea NNN
+echo  /n NNN XXX         Añade una nota con el texto XXX a la tarea XXX
+echo  /+ NNN             Incrementa la prioridad de la tarea NNN
+echo  /- NNN             Decrementa la prioridad de la tarea NNN
+echo  /compacta          Elimina tareas completadas y renumera las restantes
 echo.
 goto :end
 
