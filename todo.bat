@@ -1,10 +1,11 @@
-ï»¿@echo off
+@echo off
 set NLS_LANG=AMERICAN_AMERICA.UTF8
 chcp 65001 > nul
 setlocal enabledelayedexpansion
 
 set "DATAFILE=%~dp0todo.dat"
 set "TEMPFILE=%~dp0todo.tmp"
+set "NPP=c:\Users\dars\bin\Npp\notepad++.exe"
 
 if not exist "%DATAFILE%" type nul > "%DATAFILE%"
 
@@ -21,11 +22,12 @@ if /i "%~1"=="/n" goto :add_note
 if /i "%~1"=="/+" goto :boost_task
 if /i "%~1"=="/-" goto :lower_task
 if /i "%~1"=="/compacta" goto :compact_tasks
+if /i "%~1"=="/edita" goto :edit_file
 
 :: ============================================================
 :show_help
 echo.
-echo  TODO.BAT 1.2 - Gestor de tareas pendientes
+echo  TODO.BAT 1.3 - Gestor de tareas pendientes
 echo.
 echo  Uso: TODO [opcion] [argumentos]
 echo.
@@ -33,12 +35,13 @@ echo  (sin opciones)     Lista las tareas pendientes
 echo( /?                 Muestra esta ayuda
 echo  /a XXX             Crea una nueva tarea con el texto XXX
 echo  /l                 Lista todas las tareas
-echo  /c NNN             Completa la tarea con el nÃºmero NNN
+echo  /c NNN             Completa la tarea con el número NNN
 echo  /d NNN             Muestra el detalle de la tarea NNN
-echo  /n NNN XXX         AÃ±ade una nota con el texto XXX a la tarea XXX
+echo  /n NNN XXX         Añade una nota con el texto XXX a la tarea XXX
 echo  /+ NNN             Incrementa la prioridad de la tarea NNN
 echo  /- NNN             Decrementa la prioridad de la tarea NNN
 echo  /compacta          Elimina tareas completadas y renumera las restantes
+echo  /edita             Abre el fichero de datos en Notepad++
 echo.
 goto :end
 
@@ -448,6 +451,16 @@ for /f "usebackq delims=" %%L in ("%DATAFILE%") do (
 move /y "%TEMPFILE%" "%DATAFILE%" >nul
 echo Compactacion completada: !_count_done! tarea(s) eliminada(s), !_new_id! tarea(s) renumerada(s).
 goto :show_pending
+
+:: ============================================================
+:edit_file
+if not exist "%NPP%" (
+    echo Error: No se encuentra el editor configurado.
+    echo        %NPP%
+    goto :end
+)
+start "" "%NPP%" "%DATAFILE%"
+goto :end
 
 :: ============================================================
 :get_now
