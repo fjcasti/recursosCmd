@@ -15,6 +15,11 @@ ECHO OPCIÓN 2
 FOR /F %%A IN ('TIME /T') DO SET VARIABLE2=%%A
 echo %variable2%
 
+REM Si hay espacios en la salida se corta el texto. Con lo siguiente no ocurre.
+ECHO OPCIÓN 2 todo el texto
+FOR /F "delims=" %%A IN ('TIME /T') DO SET VARIABLE2=%%A
+echo %variable2%
+
 
 rem OPCIÓN 2 MEJORADA
 ECHO OPCIÓN 2 mejorada
