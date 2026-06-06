@@ -35,10 +35,10 @@ Cada teclado tiene su propio fichero `.json` en `POWERTOYS_CONF_FOLDER`. El scri
                       │
 ┌─────────────────────▼────────────────────────┐
 │ Detecta teclados conectados (pnputil)        │
-│ Evalúa INSTANCE_ID_* uno a uno              │
+│ Evalúa INSTANCE_ID_* uno a uno               │
 └────────┬──────────────────────┬──────────────┘
          │ Teclado externo       │ Ninguno
-   ┌─────▼──────────┐      ┌────▼──────────────┐
+   ┌─────▼──────────┐      ┌────▼───────────────┐
    │ Mata proceso   │      │ Mata proceso       │
    │ (si PID)       │      │ (si PID)           │
    │ Copia <name>   │      │ Copia portail.json │
