@@ -109,6 +109,7 @@ set "_text=!_text! %~1"
 goto :_loop_add
 
 :_do_add
+echo.>> "%DATAFILE%"
 echo !_text!>> "%DATAFILE%"
 echo Añadido: !_text!
 goto :end
