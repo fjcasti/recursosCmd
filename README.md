@@ -7,6 +7,7 @@ Colección de scripts de Windows Batch reutilizables que cubren tareas habituale
 | Script | Descripción |
 |---|---|
 | [`asignar_salida_comando_a_variable.bat`](#asignar_salida_comando_a_variablebat) | Tres técnicas para capturar la salida de un comando en una variable |
+| [`bdc.bat`](#bdcbat) | Base de Conocimiento: añade, categoriza y busca notas en un fichero Markdown |
 | [`bloquear_sesión.bat`](#bloquear_sesiónbat) | Bloquea la sesión de Windows con una sola línea |
 | [`control_cursor_en_consola.bat`](#control_cursor_en_consolabat) | Secuencias ANSI para mover y repintar el cursor en consola |
 | [`copiaSeguridad.bat`](#copiaseguridadbat) | Copia de seguridad comprimida con 7-Zip, configurable por parámetros |
@@ -28,6 +29,18 @@ Colección de scripts de Windows Batch reutilizables que cubren tareas habituale
 
 ### `asignar_salida_comando_a_variable.bat`
 Demuestra tres métodos distintos para capturar la salida de un comando en una variable Batch: `FOR /F`, `SET /P` con redirección y fichero temporal.
+
+### `bdc.bat`
+Gestiona una base de conocimiento personal en un fichero Markdown (`.md`). Permite añadir notas sueltas, organizar entradas bajo categorías (`## título`), buscar texto con apertura automática de Notepad++ en la primera coincidencia, y editar el fichero directamente en el editor.
+
+| Opción | Descripción |
+|---|---|
+| `XXX` | Añade el texto XXX al final del fichero |
+| `/c CCC XXX` | Añade XXX bajo el título `## CCC` |
+| `/b XXX` | Busca XXX y abre Notepad++ en la primera ocurrencia |
+| `/e` | Abre el fichero de datos en Notepad++ |
+
+**Requisito:** Notepad++ instalado en la ruta configurada en la variable `NPP` del script.
 
 ### `bloquear_sesión.bat`
 Llama a `rundll32.exe user32.dll LockWorkStation` para bloquear la sesión del usuario actual. Útil como atajo o como paso dentro de un flujo mayor.

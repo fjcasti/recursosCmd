@@ -21,6 +21,9 @@ copy /Y "%USERPROFILE%\.gitconfig.!_chosen!" "%USERPROFILE%\.gitconfig"
 goto :end
 
 :list
+
+FOR /F "delims="  %%A IN ('git config user.name') DO SET gitUSER=%%A
+ECHO Usuario Git: %gitUSER%
 for /l %%i in (1,1,!_n!) do (
     set "_mark= "
     fc /b "%USERPROFILE%\.gitconfig" "%USERPROFILE%\.gitconfig.!_profile_%%i!" >nul 2>nul
