@@ -68,8 +68,20 @@ if not exist "%DATAFILE%" (
 )
 echo.
 findstr /i /n "!_search!" "%DATAFILE%"
-if errorlevel 1 echo No se encontraron coincidencias para: !_search!
+if errorlevel 1 (
+    echo No se encontraron coincidencias para: !_search!
+    echo.
+    goto :end
+)
 echo.
+
+if not exist "%NPP%" goto :end
+
+set "_firstline="
+for /f "tokens=1 delims=:" %%a in ('findstr /i /n "!_search!" "%DATAFILE%"') do (
+    if "!_firstline!"=="" set "_firstline=%%a"
+)
+if not "!_firstline!"=="" start "" "%NPP%" -n!_firstline! "%DATAFILE%"
 goto :end
 
 :: ============================================================
