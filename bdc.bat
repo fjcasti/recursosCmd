@@ -3,8 +3,14 @@ set NLS_LANG=AMERICAN_AMERICA.UTF8
 chcp 65001 > nul
 setlocal enabledelayedexpansion
 
-set "DATAFILE=%~dp0bdc.dat"
+rem opcion para guardar el fichero en la misma carpeta que el BAT: set "DATAFILE=%~dp0bdc.dat"
+set "DATAFILE=c:\Users\dars\Desktop\Casti\datos\notas.md"
 set "NPP=c:\Users\dars\bin\Npp\notepad++.exe"
+
+if "%DATAFILE%"=="" (
+    echo Error: La variable DATAFILE no esta definida.
+    goto :show_help
+)
 
 if /i "%~1"=="/?" goto :show_help
 if /i "%~1"=="/e" goto :edit_file
@@ -22,7 +28,9 @@ echo.
 echo( /?                 Muestra esta ayuda
 echo  /e                 Abre el fichero de datos en Notepad++
 echo  /b XXX             Busca el texto XXX en el fichero de datos
-echo  XXX                Añade el texto XXX al fichero de datos
+echo  XXX                AÃ±ade el texto XXX al fichero de datos
+echo.
+echo  Fichero de datos: %DATAFILE%
 echo.
 goto :end
 
@@ -73,7 +81,7 @@ goto :_loop_add
 
 :_do_add
 echo !_text!>> "%DATAFILE%"
-echo Añadido: !_text!
+echo AÃ±adido: !_text!
 goto :end
 
 :: ============================================================
