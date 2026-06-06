@@ -15,6 +15,7 @@ if "%DATAFILE%"=="" (
 if /i "%~1"=="/?" goto :show_help
 if /i "%~1"=="/e" goto :edit_file
 if /i "%~1"=="/b" goto :search_text
+if /i "%~1"=="/c" goto :add_category
 if "%~1"==""      goto :show_help
 goto :add_text
 
@@ -28,6 +29,7 @@ echo.
 echo( /?                 Muestra esta ayuda
 echo  /e                 Abre el fichero de datos en Notepad++
 echo  /b XXX             Busca el texto XXX en el fichero de datos
+echo  /c CCC XXX         Añade XXX bajo el titulo ## CCC
 echo  XXX                Añade el texto XXX al fichero de datos
 echo.
 echo  Fichero de datos: %DATAFILE%
@@ -68,6 +70,33 @@ echo.
 findstr /i /n "!_search!" "%DATAFILE%"
 if errorlevel 1 echo No se encontraron coincidencias para: !_search!
 echo.
+goto :end
+
+:: ============================================================
+:add_category
+if "%~2"=="" (
+    echo Error: Especifique el titulo de la categoria.
+    echo Uso: BDC /c ^<titulo^> ^<texto^>
+    goto :end
+)
+if "%~3"=="" (
+    echo Error: Especifique el texto a añadir.
+    echo Uso: BDC /c ^<titulo^> ^<texto^>
+    goto :end
+)
+set "_category=%~2"
+set "_text=%~3"
+:_loop_category
+shift /3
+if "%~3"=="" goto :_do_add_category
+set "_text=!_text! %~3"
+goto :_loop_category
+
+:_do_add_category
+echo.>> "%DATAFILE%"
+echo ## !_category!>> "%DATAFILE%"
+echo !_text!>> "%DATAFILE%"
+echo Añadido en [!_category!]: !_text!
 goto :end
 
 :: ============================================================
