@@ -17,7 +17,7 @@ Colección de scripts de Windows Batch reutilizables que cubren tareas habituale
 | [`gitperf.bat`](#gitperfbat) | Mantiene distintos perfiles para usar con Git |
 | [`jira.bat`](#jirabat) | Gestión de tareas locales con integración en Firefox y Total Commander |
 | [`lee_fichero_ini.bat`](#lee_fichero_inibat) | Lector genérico de ficheros `.ini` por sección y clave |
-| [`miTeclado.bat`](#mitecladobat) | Arranca o detiene PowerToys Keyboard Manager según si el teclado está conectado |
+| [`miTeclado.bat`](#mitecladobat) | Arranca o detiene PowerToys Keyboard Manager según el teclado que esté conectado |
 | [`procesar_parametros_linea_comandos.bat`](#procesar_parametros_linea_comandosbat) | Patrón para procesar parámetros con nombre y posicionales |
 | [`todo.bat`](#todobat) | Gestion de notas/tareas para hacer |
 | [`usar_UTF8_en_consola.bat`](#usar_utf8_en_consolabat) | Configura la consola para mostrar caracteres UTF-8 correctamente |
@@ -65,7 +65,8 @@ Sistema de gestión de tareas basado en el sistema de ficheros. Permite crear, a
 Subrutina reutilizable que recibe como parámetros la ruta al fichero `.ini`, la sección y la clave, y devuelve el valor en una variable. Maneja comentarios (`;`) y espacios en blanco.
 
 ### `miTeclado.bat`
-Detecta si un teclado USB concreto (identificado por su Instance ID) está conectado y, en función de ello, arranca o detiene el proceso `PowerToys.KeyboardManagerEngine`. Diseñado para ejecutarse desde el Programador de tareas al conectar/desconectar dispositivos USB.
+Detecta si alguno de los teclados USB se se tengan configurados está conectado, identificado por su Instance ID.
+En función de ello arranca el perfil de teclado que se desee o incluso detener el `PowerToys.KeyboardManagerEngine`.
 
 Consulta [`miTeclado.md`](miTeclado.md) para la documentación completa.
 
