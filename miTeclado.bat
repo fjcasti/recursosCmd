@@ -5,15 +5,16 @@ REM Verifica los teclados que se deseen. Cada uno puede tener su configuración.
 rem si no encuentra ninguno usa la configuración del portatil, que lleva la suya propia.
 rem Para añadir otro teclado es necesario crear un perfil en la ruta
 rem POWERTOYS_CONF_FOLDER
-
+rem Para seleccionar los ID de instancia no coger todo la cadena, la parte final puede variar, 
+rem basta seleccionar hasta PID_. Fíjate en la cadena del teclado blanco  INSTANCE_ID_BLANCO
 setlocal enabledelayedexpansion
 
 set "PROCESS_NAME=PowerToys.KeyboardManager"
-set "INSTANCE_ID_BLANCO=HID\VID_04D9&PID_A0F8&MI_00\7&2b3d7e1b&0&0000"
+set "INSTANCE_ID_BLANCO=HID\VID_04D9&PID_A0F8"
 set ID_BLANCO=
 
-:: esta es una instancia falsa para pruebas. Aquí irían todos los teclado que quiera conectar. Uno a uno.
-set "INSTANCE_ID_XXX=HID\VID_&PID_&MI_\1&2b3c4d5e7f&0&0000"
+:: esta es una instancia falsa para prueba. Aquí irían todos los teclado que quiera conectar. Uno a uno.
+set "INSTANCE_ID_XXX=HID\VID_XXXX&PID_XXXX"
 SET ID_XXX=
 
 set "LAUNCH_CMD=c:\Users\dars\AppData\Local\PowerToys\KeyboardManagerEngine\PowerToys.KeyboardManagerEngine.exe"
