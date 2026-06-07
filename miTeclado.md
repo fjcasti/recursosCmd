@@ -66,6 +66,9 @@ if defined RAW_ID set "ID_BLANCO=!RAW_ID: =!"
 
 Enumera los teclados HID conectados y busca el Instance ID configurado. Si lo encuentra, almacena el ID limpio (sin espacios) en la variable correspondiente.
 
+Para seleccionar los ID de instancia no coger toda la cadena, la parte final puede variar. Basta seleccionar hasta PID_. Fíjarse en la cadena del teclado blanco INSTANCE_ID_BLANCO.
+
+
 ### Paso 3 — Selección de perfil y arranque
 
 1. Si hay un proceso corriendo, se mata con `taskkill /PID %PID% /F`.
