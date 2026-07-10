@@ -309,8 +309,8 @@ rem *** Búsqueda de texto en tareas cerradas **********************************
     REM Abrir Notepad++ con el archivo .leeme
     start %NPP% "%ARCHIVO_LEEME%"
 
-    REM Abrir Total Commander en panel izquierdo con nueva pestaña
-    start "" %TC% /O /T /L="%RUTA_TAREA%"
+    REM Abrir Total Commander en panel izquierdo
+    start "" %TC% /O /L="%RUTA_TAREA%"
 
     REM Solo abrir navegador si el código NO comienza con 0x (tareas sin mantis)
     SET "PREFIJO=%CODIGO:~0,2%"
