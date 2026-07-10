@@ -39,6 +39,11 @@ set "PID="
 for /f "tokens=2" %%a in ('tasklist ^| find /I "%PROCESS_NAME%"') do (
     set "PID=%%a"
 )
+if defined PID (
+    echo [ ] Quitando configuración anterior
+    taskkill /PID %PID% /F >nul 2>&1
+)
+
 
 :: Ejecuta pnputil y busca el ID de instancia
 REM pnputil /enum-devices /class keyboard /connected | findstr /C:"%INSTANCE_ID%" >nul
@@ -61,10 +66,7 @@ REM if defined RAW_ID set "ID_XXX=!RAW_ID: =!"
 
 
 
-if defined PID (
-    echo [ ] Quitando configuración anterior
-    taskkill /PID %PID% /F >nul 2>&1
-)
+
 
 if defined ID_BLANCO (
     echo [ ] Teclado blanco detectado.
@@ -84,7 +86,7 @@ if defined ID_BLANCO (
 ) ELSE (
     echo [ ] Ningún teclado detectado.
     echo [ ] Seleccionando configuración del teclado del portátil.
-    copy /Y "%POWERTOYS_CONF_FOLDER%\portail.json" "%POWERTOYS_CONF_FOLDER%\default.json" >nul 2>&1
+    copy /Y "%POWERTOYS_CONF_FOLDER%\portatil.json" "%POWERTOYS_CONF_FOLDER%\default.json" >nul 2>&1
     
     echo [ ] Configurando PowerToys Keyboard Manager ...
     start "" "%LAUNCH_CMD%"
